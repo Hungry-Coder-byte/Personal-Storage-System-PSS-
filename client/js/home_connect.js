@@ -5,7 +5,7 @@ angular.module('homeApp', [])
             var data = {};
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/disk_size',
+                url: 'http://localhost:9116/disk_size',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -43,7 +43,7 @@ angular.module('homeApp', [])
             data.path = path;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/get_folders',
+                url: 'http://localhost:9116/get_folders',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -57,7 +57,7 @@ angular.module('homeApp', [])
             data.folder_name = folder_name;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/create_folder',
+                url: 'http://localhost:9116/create_folder',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -89,7 +89,7 @@ angular.module('homeApp', [])
             data.path = path;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/remove_folder',
+                url: 'http://localhost:9116/remove_folder',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -113,7 +113,7 @@ angular.module('homeApp', [])
             data.path = folder_path;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/get_files',
+                url: 'http://localhost:9116/get_files',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -131,7 +131,7 @@ angular.module('homeApp', [])
             var data = {};
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/get_all_disks',
+                url: 'http://localhost:9116/get_all_disks',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -147,7 +147,7 @@ angular.module('homeApp', [])
             data.disk_name = $scope.storage_selected;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/create_new_cloud',
+                url: 'http://localhost:9116/create_new_cloud',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -166,7 +166,7 @@ angular.module('homeApp', [])
             data.cloud_id = cloud_id;
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/activate_cloud',
+                url: 'http://localhost:9116/activate_cloud',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
@@ -201,7 +201,7 @@ angular.module('homeApp', [])
             console.log("Request body", data);
             $http({
                 method: 'POST',
-                url: 'http://localhost:9115/save_images_p_cdn',
+                url: 'http://localhost:9116/save_images_p_cdn',
                 headers: { 'Content-Type': 'application/json' },
                 data: angular.toJson(data)
             }).then(function onsuccess(response) {
