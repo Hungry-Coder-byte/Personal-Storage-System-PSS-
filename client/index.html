@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="css/index.css">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
+<script src="./js/index_connect.js"></script>
+<div class="container" ng-app="indexApp" ng-controller="indexCtrl">
+    <form>
+        <h1>Personal CDN</h1>
+        <div class="form-group">
+            <input type="text" required="required"  ng-model="username"/>
+            <label for="input" class="control-label">Username</label><i class="bar"></i>
+        </div>
+        <div class="form-group">
+            <input type="password" required="required" ng-model="password"/>
+            <label for="input" class="control-label">Password</label><i class="bar"></i>
+        </div>
+    </form>
+    <div class="button-container">
+        <button type="button" class="button" ng-click="signin(username,password)"><span>Submit</span></button>
+    </div>
+</div>

@@ -1,0 +1,298 @@
+<html>
+
+<head>
+    <title>CDN</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
+    <script src="./js/home_connect.js"></script>
+    <link rel="stylesheet" href="./css/home.css">
+    <link rel="stylesheet" href="./css/material.min.css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body ng-app="homeApp" ng-controller="homeCtrl" ng-init="getDiskSize()">
+    <div
+        class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header mdl-color--grey-100">
+        <header class="demo-header mdl-layout__header_v2 mdl-color--grey-100 mdl-color-text--grey-600">
+            <div class="mdl-layout__header-row">
+                <img src="./images/logo.png" class="icon_logo">
+                <span class="mdl-layout-title">Personal CDN</span>
+                <div class="mdl-layout-spacer"></div>
+                <div class="mdl-layout-title cloud_name_head">
+                    {{storage.current_selected.for_location}}
+                </div>
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon cloud_name_head"
+                    id="cloud_name">
+                    <i class="material-icons">my_location</i>
+                </button>
+                <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="cloud_name">
+                    <li class="mdl-menu__item" ng-repeat="all_stores in storage.all_storages"
+                        ng-if="all_stores.is_current != true" ng-click="active_location(all_stores.cloud_id)"><i class="fa fa-map-marker" aria-hidden="true"
+                            style="position: absolute;top:12px;left:10px;font-size: 25px;"></i><span
+                            style="position: absolute;left:35px;">{{all_stores.for_location}}</span></li>
+                    <li class="mdl-menu__item" data-toggle="modal" data-target="#myModal2" ng-click="getAllDisks()"><i class="material-icons"
+                            style="position: absolute;top:12px;left:5px;">control_point</i><span
+                            style="position: absolute;left:35px;">Add New</span></li>
+                </ul>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+                        <i class="material-icons">search</i>
+                    </label>
+                    <div class="mdl-textfield__expandable-holder">
+                        <input class="mdl-textfield__input" type="text" id="search"
+                            placeholder="Search Folder or Files">
+                        <!-- <label class="mdl-textfield__label" for="search"></label> -->
+                    </div>
+                </div>
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
+                    <i class="material-icons">more_vert</i>
+                </button>
+                <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
+                    <!-- <li class="mdl-menu__item">Account Details</li> -->
+                    <li class="mdl-menu__item" ng-click="logout()">Logout</li>
+                </ul>
+            </div>
+        </header>
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Add New Cloud</h4>
+                    </div>
+                    <div class="modal-body">
+                        <span ng-if="error_message != undefined && error_message != null"
+                            style="color: red;">{{error_message}}</span>
+                        <input type="text" required="required" ng-model="new_cloud_name" placeholder="Enter cloud name"
+                            style="width: 100%;padding:5px;" /><br><br>
+                        <input type="text" required="required" ng-model="for_location_name" placeholder="Enter District"
+                            style="width: 100%;padding:5px;" /><br><br>
+                        <select style="width: 100%;padding:5px;" ng-model="storage_selected">
+                            <option value="" selected="selected" disabled="disabled">Select Storage</option>
+                            <option ng-repeat="disk in all_disks">{{disk.storage_name}}</option>
+                        </select>
+                        <!-- <input type="text" required="required" ng-model="new_folder_name" placeholder="Enter the name" -->
+                        <!-- style="width: 100%;padding:5px;" /> -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dialog" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-dialog"
+                            ng-click="createCloud(new_folder_name)">Save</button>
+                    </div>
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div><!-- modal -->
+        <!-- The Modal -->
+        <main class="storage_details">
+            <div class="mdl-grid demo-content">
+                <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-grid">
+                    <div class="pieContainer">
+                        <div class="pieBackground"></div>
+                        <div id="pieSlice1" class="hold">
+                            <div class="pie"></div>
+                        </div>
+                        <div id="pieSlice2" class="hold">
+                            <div class="pie"></div>
+                        </div>
+                        <div id="pieSlice3" class="hold">
+                            <div class="pie"></div>
+                        </div>
+                        <!-- <div class="innerCircle"> -->
+                        <!-- <div class="content"><br><b>Storage</b></div> -->
+                        <!-- <div class="content"><br><b>Total Storage</b><br>{{storage.total_size}} GB</div> -->
+                        <!-- </div> -->
+                    </div>
+                    <div class="storage_text">
+                        <svg viewBox="0 0 220 100">
+                            <rect width="50" height="25" style="fill:#1b458b;" /></svg>
+                        <p class="content"><br><b>Total Storage</b><br>{{storage.total_size}} GB</p>
+                        <svg viewBox="0 0 220 100">
+                            <rect width="50" height="25" style="fill:#f80;" /></svg>
+                        <p class="content"><br><b>Used Storage</b><br>{{storage.used_size}} GB</p>
+                        <svg viewBox="0 0 220 100">
+                            <rect width="50" height="25" style="fill:#0a0;" /></svg>
+                        <p class="content"><br><b>Free Storage</b><br>{{storage.free_size}} GB</p>
+                    </div>
+                    <!-- <div class="pieContainer">
+                        <div class="pieBackground"></div>
+                        <div id="pieSlice2" class="hold">
+                            <div class="pie"></div>
+                        </div>
+                        <div class="innerCircle">
+                            <div class="content"><br><b>Used Storage</b><br>{{storage.used_size}} GB</div>
+                        </div>
+                    </div>
+                    <div class="pieContainer">
+                        <div class="pieBackground"></div>
+                        <div id="pieSlice3" class="hold">
+                            <div class="pie"></div>
+                        </div>
+                        <div class="innerCircle">
+                            <div class="content"><br><b>Free Storage</b><br>{{storage.free_size}} GB</div>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-grid">
+                    <h4 class="mdl-layout-title" style="padding:10px;"><b>Account Details</b></h4>
+                    <div class="account_details">
+                        <p>Cloud Name: <span
+                                style="margin-left:86px;font-weight: bolder;color: grey;">{{storage.current_selected.cloud_name}}</span>
+                        </p>
+                        <p>API Key: <span
+                                style="margin-left:115px;font-weight: bolder;color: grey;">{{storage.current_selected.api_key}}</span>
+                        </p>
+                        <p>API Secret: <span
+                                style="margin-left:97px;font-weight: bolder;color: grey;">{{storage.current_selected.api_secret}}</span>
+                        </p>
+                        <p>Secure delivery URL: <span
+                                style="margin-left:39px;font-weight: bolder;color: grey;">{{storage.current_selected.secure_path}}</span>
+                        </p>
+                        <!-- <p>API Base URL: <span style="margin-left:77px;font-weight: bolder;color: grey;">sajhdjkhajkshdjkhaksd</span></p> -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="folders">
+            <div class="folder_header">
+                <label class="mdl-button mdl-js-button mdl-button--icon" for="add_folder" style="float: right;"
+                    data-toggle="modal" data-target="#myModal">
+                    <i class="material-icons">create_new_folder</i>
+                </label>
+                <h4>Folders</h4>
+            </div>
+            <div class="grid">
+                <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-grid"
+                    ng-repeat="folder in folders track by $index"
+                    ng-dblclick="get_files_of_folder(folder.folder_path,folder.folder_name)">
+                    <div class="folder_wrapper">
+                        <div class="inside_folder">
+                            <p><label class="mdl-button mdl-js-button mdl-button--icon" for="folder">
+                                    <i class="material-icons">folder</i>
+                                </label>&nbsp;&nbsp;&nbsp;
+                                <span ng-if="folder.folder_name.length < 20">{{folder.folder_name}}</span>
+                                <span
+                                    ng-if="folder.folder_name.length > 20">{{folder.folder_name.substring(0,15)}}...</span>
+                            </p>
+                        </div>
+                        <div class="inside_folder">
+                            <label class="mdl-button mdl-js-button mdl-button--icon" for="more_vert"
+                                ng-click="showFolderOpts($index)">
+                                <i class="material-icons">more_vert</i>
+                            </label>
+                        </div>
+                        <div class="inside_folder">
+                            <ul class="folder_options">
+                                <li class="mdl-menu__item" data-toggle="modal" data-target="#myModal1"
+                                    ng-click="get_files_of_folder(folder.folder_path,folder.folder_name)">
+                                    <label class="mdl-button mdl-js-button mdl-button--icon">
+                                        <i class="material-icons">folder_open</i>
+                                    </label>
+                                    Browse Files
+                                </li>
+                                <li class="mdl-menu__item" ng-click="deleteFolder(folder.folder_path)">
+                                    <label class="mdl-button mdl-js-button mdl-button--icon">
+                                        <i class="material-icons">delete</i>
+                                    </label>
+                                    Delete Folder
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Add Folder</h4>
+                        </div>
+                        <div class="modal-body">
+                            <span ng-if="error_message != undefined && error_message != null"
+                                style="color: red;">{{error_message}}</span>
+                            <input type="text" required="required" ng-model="new_folder_name"
+                                placeholder="Enter the name" style="width: 100%;padding:5px;" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-dialog" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-dialog"
+                                ng-click="createFolders(new_folder_name)">Save</button>
+                        </div>
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
+            </div><!-- modal -->
+            <!-- The Modal -->
+            <div class="modal fade" id="myModal1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">{{selected_folder}}</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body" style="max-height: 500px;overflow-x: hidden; overflow-y: scroll;">
+                            <!-- <div style="width: 5%;position: absolute;right: 0px;top:0px;">
+                                <label class="mdl-button mdl-js-button mdl-button--icon">
+                                    <i class="material-icons">cloud_upload</i>
+                                </label>
+                            </div> -->
+                            <!-- <p ng-repeat="file in files_of_folder">{{file}}</p> -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-fixed">
+                                    <thead>
+                                        <tr>
+                                            <th>File</th>
+                                            <th>Last Modified</th>
+                                            <th>Size</th>
+                                            <th>Open</th>
+                                            <!-- <th>Area (Km²)</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="file in files_of_folder">
+                                            <td>{{file.name}}</td>
+                                            <td>{{file.lastModified}}</td>
+                                            <td>{{file.fileSize}}</td>
+                                            <td><a href="{{file.filePath}}" target="__blank">Link</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div ng-show="loader" class="lds-ring">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <!--end of .table-responsive-->
+                            <!-- <img ng-repeat = "img in files_of_folder" src="{{img}}"> -->
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <input type="file" id="file" multiple>
+    <button type="submit" id="convert" ng-click="convertToBase64()">Convert</button>
+    <div id="content">
+    </div> -->
+    <script src="./js/material.min.js"></script>
+    <script>
+        function showFolderOpts() {
+            // alert("clicked"+document.getElementsByClassName("folder_options")[0].style.display);
+            console.log(document.getElementsByClassName("folder_options")[0].style)
+            document.getElementsByClassName("folder_options")[0].style.display = "block";
+        }
+    </script>
+</body>
+
+</html>
