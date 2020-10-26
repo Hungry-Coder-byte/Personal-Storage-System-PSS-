@@ -34,3 +34,5 @@ Images can be upload to the server using REST APIs as well as from the admin das
           Allow from all
         </Location>
         </VirtualHost>
+ 
+ 3. Restart Apache2 server - sudo service apache2 restart (check server should restart succesfully)
