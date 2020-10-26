@@ -1,0 +1,26 @@
+create sequence cloud_id start with 1000;
+CREATE TABLE public.cloud_storage
+(
+  cloud_id bigint NOT NULL DEFAULT nextval('cloud_id'::regclass),
+  cloud_name text NOT NULL,
+  cloud_path text NOT NULL,
+  for_location text,
+  is_current boolean NOT NULL DEFAULT false,
+  api_key text NOT NULL,
+  api_secret text NOT NULL,
+  createdtm timestamp without time zone DEFAULT now(),
+  updatedtm timestamp without time zone DEFAULT now(),
+  CONSTRAINT cloud_storage_pkey PRIMARY KEY (cloud_id),
+  CONSTRAINT unique_cloud_same_path UNIQUE (cloud_name, cloud_path)
+);
+
+create sequence storage_id start with 100;
+CREATE TABLE public.available_storage
+(
+  storage_id bigint NOT NULL DEFAULT nextval('storage_id'::regclass),
+  storage_name text NOT NULL,
+  storage_path text NOT NULL,
+  createdtm timestamp without time zone DEFAULT now(),
+  updatedtm timestamp without time zone DEFAULT now(),
+  CONSTRAINT available_storage_pkey PRIMARY KEY (storage_id)
+);

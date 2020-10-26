@@ -8,9 +8,9 @@ var pgp = require('pg-promise')(options); //postgre promise
 var cn = {
     host: 'localhost', // 'localhost' is the default;
     port: 5432, // 5432 is the default;
-    database: '', // your database name
-    user: '', // Your database user
-    password: '', // Password of above user
+    database: 'bms_v2', // your database name
+    user: 'bms', // Your database user
+    password: 'password', // Password of above user
     charset: 'UTF8_GENERAL_CI',
 };
 

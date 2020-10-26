@@ -245,3 +245,22 @@ var urlAuth = function (req, res, next) {
 }
 
 module.exports.urlAuth = urlAuth;
+
+var saveToDisk = function (req, res, next) {
+    var base64s = req.body.base;
+    console.log("saveToDisk request body", base64s.length);
+    convertToImage(base64s, function (saved) {
+        res.send(saved);
+    })
+}
+
+function convertToImage(base, callback) {
+    var base64Data = base.replace(/^data:image\/jpeg;base64,/, "");
+    const secondsSinceEpoch = Date.now() / 1000;
+    fs.writeFile("/media/yashu/cool/myWork/cdn_storage/folder2/" + secondsSinceEpoch + ".jpeg", base64Data, 'base64', function (err) {
+        console.log("file name", secondsSinceEpoch);
+        callback("/media/yashu/cool/myWork/cdn_storage/folder2/" + secondsSinceEpoch + ".jpeg");
+    })
+}
+
+module.exports.saveToDisk = saveToDisk;
